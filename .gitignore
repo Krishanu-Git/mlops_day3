@@ -1,0 +1,22 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+
+# Distribution / packaging
+build/
+dist/
+
+# Virtual environments
+.venv/
+.env
+
+# IDEs
+.vscode/
+
+# pytest
+.pytest_cache/
+
+# Model files and secrets
+models/
+*.joblib
+secret.txt

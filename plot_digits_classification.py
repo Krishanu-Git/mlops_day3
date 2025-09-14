@@ -13,9 +13,14 @@ hand-written digits, from 0-9.
 
 # Standard scientific Python imports
 import matplotlib.pyplot as plt
-
+import subprocess
+import sys
+from pathlib import Path
+import joblib
 # Import datasets, classifiers and performance metrics
 from sklearn import datasets, metrics, svm
+from sklearn.naive_bayes import MultinomialNB
+from sklearn.neighbors import KNeighborsClassifier
 from sklearn.model_selection import train_test_split
 
 ###############################################################################
@@ -126,3 +131,38 @@ print(
     "Classification report rebuilt from confusion matrix:\n"
     f"{metrics.classification_report(y_true, y_pred)}\n"
 )
+
+# Prepare models directory
+models_dir = Path("models")
+models_dir.mkdir(exist_ok=True)
+
+# Train two models on the already prepared X_train, X_test, y_train, y_test
+models = {
+    "knn": KNeighborsClassifier(n_neighbors=3),
+    "nb": MultinomialNB(),
+}
+
+for name, model in models.items():
+    model.fit(X_train, y_train)
+    preds = model.predict(X_test)
+    acc = metrics.accuracy_score(y_test, preds)
+    print(f"{name.upper()} test accuracy: {acc:.4f}")
+    # Save each trained model
+    joblib.dump(model, str(models_dir / f"{name}.joblib"))
+
+# Create a tests directory and write a test that checks saved model files exist
+tests_dir = Path("tests")
+tests_dir.mkdir(exist_ok=True)
+test_file = tests_dir / "test_saved_models_exist.py"
+
+# Run the test file and show its output
+print("\nRunning saved-models existence test...")
+proc = subprocess.run([sys.executable, str(test_file)], capture_output=True, text=True)
+print(proc.stdout.strip())
+if proc.returncode != 0:
+    print(proc.stderr.strip())
+    raise SystemExit(proc.returncode)
+
+# Clean up created models
+for model_path in models_dir.iterdir():
+    model_path.unlink()
