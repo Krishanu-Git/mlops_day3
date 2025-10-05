@@ -149,20 +149,3 @@ for name, model in models.items():
     print(f"{name.upper()} test accuracy: {acc:.4f}")
     # Save each trained model
     joblib.dump(model, str(models_dir / f"{name}.joblib"))
-
-# Create a tests directory and write a test that checks saved model files exist
-tests_dir = Path("tests")
-tests_dir.mkdir(exist_ok=True)
-test_file = tests_dir / "test_saved_models_exist.py"
-
-# Run the test file and show its output
-print("\nRunning saved-models existence test...")
-proc = subprocess.run([sys.executable, str(test_file)], capture_output=True, text=True)
-print(proc.stdout.strip())
-if proc.returncode != 0:
-    print(proc.stderr.strip())
-    raise SystemExit(proc.returncode)
-
-# Clean up created models
-for model_path in models_dir.iterdir():
-    model_path.unlink()
