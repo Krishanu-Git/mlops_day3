@@ -30,3 +30,9 @@ jobs:
 
       - name: Run experiment
         run: python plot_digits_classification.py
+
+      - name: Test saved models exist
+        run: pytest tests/test_saved_models_exist.py
+
+      - name: Models Cleanup
+        run: python cleanup.py
